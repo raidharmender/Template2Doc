@@ -1,20 +1,17 @@
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
 import tempfile
+import os
+from docxtpl import DocxTemplate
+from docx2pdf import convert
 
 def generate_pdf(data: dict) -> str:
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
-    c = canvas.Canvas(tmp.name, pagesize=A4)
-    width, height = A4
-    c.setFont("Helvetica-Bold", 20)
-    c.drawString(50, height - 50, "Offer Letter")
-    c.setFont("Helvetica", 12)
-    y = height - 100
-    for key, value in data.get('data', {}).items():
-        c.drawString(50, y, f"{key}: {value}")
-        y -= 20
-        if y < 50:
-            c.showPage()
-            y = height - 50
-    c.save()
-    return tmp.name 
+    # 1. Render DOCX from template
+    template_path = os.path.join(os.path.dirname(__file__), 'docx_template.docx')
+    doc = DocxTemplate(template_path)
+    context = data.get('data', {})
+    doc.render(context)
+    tmp_docx = tempfile.NamedTemporaryFile(delete=False, suffix='.docx')
+    doc.save(tmp_docx.name)
+    # 2. Convert DOCX to PDF
+    tmp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+    convert(tmp_docx.name, tmp_pdf.name)
+    return tmp_pdf.name 
