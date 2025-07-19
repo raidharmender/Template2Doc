@@ -5,6 +5,8 @@ export interface FormData {
   nricFin: string;
   dateOfBirth: string;
   nationality: string;
+  country: string;
+  countryCode: string;
   mobileNumber: string;
   emergencyContact: string;
   currentAddress: string;
@@ -36,6 +38,8 @@ export const initialFormData: FormData = {
   nricFin: '',
   dateOfBirth: '',
   nationality: '',
+  country: '',
+  countryCode: '',
   mobileNumber: '',
   emergencyContact: '',
   currentAddress: '',

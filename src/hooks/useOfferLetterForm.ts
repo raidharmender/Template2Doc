@@ -9,6 +9,7 @@ export const useOfferLetterForm = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [offerId, setOfferId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleInputChange = (field: keyof FormData, value: string) => {
@@ -20,28 +21,61 @@ export const useOfferLetterForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm(formData, toast)) return;
-    
     setIsGenerating(true);
-    
-    // Simulate document generation process
-    setTimeout(() => {
+    try {
+      const response = await fetch("http://localhost:8000/api/offer-letter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: formData })
+      });
+      if (!response.ok) throw new Error("Failed to submit form");
+      const result = await response.json();
       setIsGenerating(false);
       setIsGenerated(true);
+      setOfferId(result.id);
       toast({
         title: "Success!",
-        description: "Your offer letter has been generated successfully.",
+        description: "Your offer letter has been saved.",
       });
-    }, 3000);
+    } catch (err) {
+      setIsGenerating(false);
+      toast({
+        title: "Error",
+        description: (err as Error).message || "Failed to connect to backend.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleDownload = () => {
-    // In a real implementation, this would trigger the actual PDF download
-    toast({
-      title: "Download Started",
-      description: "Your offer letter PDF is being downloaded.",
-    });
+  const handleDownloadPdf = async () => {
+    if (!offerId) return;
+    try {
+      const pdfResp = await fetch(`http://localhost:8000/api/offer-letter/${offerId}/pdf`);
+      if (pdfResp.ok) {
+        const blob = await pdfResp.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'offer_letter.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to download PDF.",
+          variant: "destructive"
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: (err as Error).message || "Failed to download PDF.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleReset = () => {
@@ -57,7 +91,8 @@ export const useOfferLetterForm = () => {
     currentStep,
     handleInputChange,
     handleSubmit,
-    handleDownload,
-    handleReset
+    handleDownloadPdf,
+    handleReset,
+    offerId
   };
 };
