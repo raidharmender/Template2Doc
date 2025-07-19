@@ -7,6 +7,7 @@ from app.docx_utils import generate_docx
 from app.pdf_utils import generate_pdf
 from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
+from bson.errors import InvalidId
 
 app = FastAPI()
 app.add_middleware(
@@ -26,7 +27,20 @@ def create_offer_letter(data: OfferLetter):
 @app.get("/api/offer-letter/{id}")
 def get_offer_letter(id: str):
     collection = get_offer_collection()
-    doc = collection.find_one({"_id": ObjectId(id)})
+    if id == 'all':
+        docs = list(collection.find())
+        result = []
+        for doc in docs:
+            doc["id"] = str(doc["_id"])
+            del doc["_id"]
+            result.append(doc)
+        return result
+    from bson.objectid import ObjectId
+    try:
+        obj_id = ObjectId(id)
+    except InvalidId:
+        raise HTTPException(status_code=404, detail="Invalid offer letter ID")
+    doc = collection.find_one({"_id": obj_id})
     if not doc:
         raise HTTPException(status_code=404, detail="Not found")
     doc["id"] = str(doc["_id"])
@@ -55,8 +69,13 @@ def delete_offer_letter(id: str):
 
 @app.get("/api/offer-letter/{id}/docx")
 def download_docx(id: str):
+    from bson.objectid import ObjectId
     collection = get_offer_collection()
-    doc = collection.find_one({"_id": ObjectId(id)})
+    try:
+        obj_id = ObjectId(id)
+    except InvalidId:
+        raise HTTPException(status_code=404, detail="Invalid offer letter ID")
+    doc = collection.find_one({"_id": obj_id})
     if not doc:
         raise HTTPException(status_code=404, detail="Not found")
     file_path = generate_docx(doc)
@@ -64,8 +83,13 @@ def download_docx(id: str):
 
 @app.get("/api/offer-letter/{id}/pdf")
 def download_pdf(id: str):
+    from bson.objectid import ObjectId
     collection = get_offer_collection()
-    doc = collection.find_one({"_id": ObjectId(id)})
+    try:
+        obj_id = ObjectId(id)
+    except InvalidId:
+        raise HTTPException(status_code=404, detail="Invalid offer letter ID")
+    doc = collection.find_one({"_id": obj_id})
     if not doc:
         raise HTTPException(status_code=404, detail="Not found")
     file_path = generate_pdf(doc)

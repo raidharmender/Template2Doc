@@ -49,3 +49,25 @@ This project provides a full-stack solution for generating, storing, and managin
   The log file will be at `frontend.log` in your project root.
 
 ---
+
+## Troubleshooting
+
+### Backend: ModuleNotFoundError: No module named 'app'
+If you see this error when running the backend:
+
+```
+ModuleNotFoundError: No module named 'app'
+```
+
+**Solution:**
+- Change to the backend directory before running uvicorn:
+  ```bash
+  cd backend
+  uvicorn app.main:app --reload
+  ```
+- Or, from the project root, set the PYTHONPATH:
+  ```bash
+  PYTHONPATH=backend uvicorn app.main:app --reload
+  ```
+
+This ensures Python can find the `app` module and the backend will start correctly.

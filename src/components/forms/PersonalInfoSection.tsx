@@ -114,7 +114,9 @@ const PersonalInfoSection = ({ formData, handleInputChange }: PersonalInfoSectio
               </SelectContent>
             </Select>
             <input
-              type="text"
+              type="tel"
+              pattern="[0-9]{8,15}"
+              inputMode="numeric"
               className="h-12 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white/80 rounded-lg px-3 flex-1"
               placeholder="Enter mobile number"
               value={formData.mobileNumber}
@@ -137,10 +139,10 @@ const PersonalInfoSection = ({ formData, handleInputChange }: PersonalInfoSectio
           required
         />
       </div>
-      <div className="space-y-3">
+      <div className="space-y-3 lg:w-1/2">
         <label className="text-sm font-semibold text-gray-800">Marital Status</label>
         <Select onValueChange={(value) => handleInputChange('maritalStatus', value)} value={formData.maritalStatus}>
-          <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white/80">
+          <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white/80 w-full max-w-xs">
             <SelectValue placeholder="Select marital status" />
           </SelectTrigger>
           <SelectContent className="bg-white border-2 border-gray-200 shadow-xl">
