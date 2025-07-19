@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pymongo
+python-docx
+jinja2
+pdfkit
+pydantic
+python-multipart 
