@@ -6,11 +6,28 @@ import { FormData } from '@/types/formTypes';
 
 interface SuccessCardProps {
   formData: FormData;
-  onDownload: () => void;
+  onDownload?: () => void;
   onReset: () => void;
+  offerId?: string;
 }
 
-const SuccessCard = ({ formData, onDownload, onReset }: SuccessCardProps) => {
+const SuccessCard = ({ formData, onReset, offerId }: SuccessCardProps) => {
+  const handleDownloadPdf = async () => {
+    if (!offerId) return;
+    const pdfResp = await fetch(`http://localhost:8000/api/offer-letter/${offerId}/pdf`);
+    if (pdfResp.ok) {
+      const blob = await pdfResp.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'offer_letter.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    }
+  };
+
   return (
     <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
       <CardHeader className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white rounded-t-lg relative overflow-hidden">
@@ -37,25 +54,15 @@ const SuccessCard = ({ formData, onDownload, onReset }: SuccessCardProps) => {
             Generated on {new Date().toLocaleDateString()}
           </p>
         </div>
-        
-        <div className="space-y-6">
-          <Button 
-            onClick={onDownload}
-            className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white px-10 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-[1.05] hover:shadow-xl rounded-xl h-14"
-          >
-            <Download className="h-6 w-6 mr-3" />
-            Download PDF Document
+        {offerId && (
+          <Button onClick={handleDownloadPdf} className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-semibold mb-4">
+            <Download className="h-5 w-5 mr-2" /> Download PDF Document
           </Button>
-          
-          <div className="pt-6">
-            <Button 
-              variant="outline"
-              onClick={onReset}
-              className="text-blue-600 border-2 border-blue-600 hover:bg-blue-50 px-8 py-3 text-lg font-medium rounded-xl h-12 transition-all duration-200"
-            >
-              Generate Another Letter
-            </Button>
-          </div>
+        )}
+        <div>
+          <Button onClick={onReset} className="mt-4 bg-gray-200 text-gray-800 px-6 py-3 rounded-lg text-lg font-semibold">
+            Fill Another Offer Letter
+          </Button>
         </div>
       </CardContent>
     </Card>

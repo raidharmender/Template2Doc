@@ -78,20 +78,11 @@ const OfferLetterForm = () => {
             </CardContent>
           </Card>
         ) : (
-          <>
-            <SuccessCard 
-              formData={formData} 
-              onDownload={handleDownload} 
-              onReset={handleReset} 
-            />
-            {offerId && (
-              <div className="flex justify-center mt-6">
-                <Button onClick={handleDownloadPdf} className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-semibold">
-                  Download PDF Document
-                </Button>
-              </div>
-            )}
-          </>
+          <SuccessCard 
+            formData={formData} 
+            onReset={handleReset} 
+            offerId={offerId}
+          />
         )}
 
         <BackendIntegrationNotice />

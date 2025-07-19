@@ -67,7 +67,6 @@ ModuleNotFoundError: No module named 'app'
   ```
 - Or, from the project root, set the PYTHONPATH:
   ```bash
-  PYTHONPATH=backend uvicorn app.main:app --reload
-  ```
+  PYTHONPATH=backend uvicorn app.main:app --reload ```
 
 This ensures Python can find the `app` module and the backend will start correctly.

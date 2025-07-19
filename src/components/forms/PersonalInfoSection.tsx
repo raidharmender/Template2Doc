@@ -101,6 +101,25 @@ const PersonalInfoSection = ({ formData, handleInputChange }: PersonalInfoSectio
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-3">
+          <label className="text-sm font-semibold text-gray-800 flex items-center">
+            Visa Category <span className="text-red-500 ml-1">*</span>
+          </label>
+          <Select onValueChange={(value) => handleInputChange('visaCategory', value)} value={formData.visaCategory}>
+            <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white/80">
+              <SelectValue placeholder="Select visa category" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border-2 border-gray-200 shadow-xl">
+              <SelectItem value="EP">Employment Pass (EP)</SelectItem>
+              <SelectItem value="SP">S Pass (SP)</SelectItem>
+              <SelectItem value="WP">Work Permit (WP)</SelectItem>
+              <SelectItem value="Local">Local</SelectItem>
+              <SelectItem value="PR">Permanent Resident (PR)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-3">
           <label className="text-sm font-semibold text-gray-800">Mobile Number</label>
           <div className="flex gap-2">
             <Select onValueChange={(value) => handleInputChange('countryCode', value)} value={formData.countryCode}>
@@ -120,11 +139,7 @@ const PersonalInfoSection = ({ formData, handleInputChange }: PersonalInfoSectio
               className="h-12 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white/80 rounded-lg px-3 flex-1"
               placeholder="Enter mobile number"
               value={formData.mobileNumber}
-              onChange={e => {
-                if (e.target.value === '' || validatePhone(e.target.value)) {
-                  handleInputChange('mobileNumber', e.target.value);
-                }
-              }}
+              onChange={e => handleInputChange('mobileNumber', e.target.value)}
               required
             />
           </div>
@@ -137,6 +152,23 @@ const PersonalInfoSection = ({ formData, handleInputChange }: PersonalInfoSectio
           onChange={(value) => handleInputChange('emailAddress', value)}
           type="email"
           required
+        />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <FormField
+          id="designation"
+          label="Designation / Job Title"
+          placeholder="Enter job title or designation"
+          value={formData.designation}
+          onChange={(value) => handleInputChange('designation', value)}
+          required
+        />
+        <FormField
+          id="emergencyContact"
+          label="Emergency Contact"
+          placeholder="Enter emergency contact"
+          value={formData.emergencyContact}
+          onChange={(value) => handleInputChange('emergencyContact', value)}
         />
       </div>
       <div className="space-y-3 lg:w-1/2">

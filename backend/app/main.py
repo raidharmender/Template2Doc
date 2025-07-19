@@ -8,6 +8,7 @@ from app.pdf_utils import generate_pdf
 from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
 from bson.errors import InvalidId
+import os
 
 app = FastAPI()
 app.add_middleware(
@@ -21,7 +22,11 @@ app.add_middleware(
 @app.post("/api/offer-letter")
 def create_offer_letter(data: OfferLetter):
     collection = get_offer_collection()
-    result = collection.insert_one(data.dict())
+    # Generate PDF and store path
+    pdf_path = generate_pdf(data.dict())
+    doc = data.dict()
+    doc['pdf_path'] = pdf_path
+    result = collection.insert_one(doc)
     return {"id": str(result.inserted_id), "data": data.dict()["data"]}
 
 @app.get("/api/offer-letter/{id}")
@@ -92,5 +97,9 @@ def download_pdf(id: str):
     doc = collection.find_one({"_id": obj_id})
     if not doc:
         raise HTTPException(status_code=404, detail="Not found")
-    file_path = generate_pdf(doc)
+    # Use cached PDF if available, else generate
+    file_path = doc.get('pdf_path')
+    if not file_path or not os.path.exists(file_path):
+        file_path = generate_pdf(doc)
+        collection.update_one({"_id": obj_id}, {"$set": {"pdf_path": file_path}})
     return FileResponse(file_path, media_type="application/pdf", filename="offer_letter.pdf") 
