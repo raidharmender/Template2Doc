@@ -19,6 +19,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
 @app.post("/api/offer-letter")
 def create_offer_letter(data: OfferLetter):
     collection = get_offer_collection()
