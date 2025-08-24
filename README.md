@@ -176,6 +176,57 @@ Both services include health check endpoints:
 4. Test thoroughly
 5. Submit a pull request
 
+## Kubernetes (Minikube) Deployment
+
+This project is fully containerized with separate images for the frontend (React + Nginx) and backend (FastAPI). Use the provided Kubernetes manifests to run everything on Minikube, including MongoDB and persistent volumes.
+
+Prerequisites
+- Minikube
+- kubectl
+- Docker (so you can build images into Minikube's Docker daemon)
+
+Steps
+1) Start Minikube and use its Docker daemon
+   - macOS/Linux (bash/zsh):
+     eval $(minikube docker-env)
+   - Windows PowerShell:
+     & minikube -p minikube docker-env | Invoke-Expression
+
+2) Build Docker images inside Minikube
+   docker build -t offerletter-backend:latest backend
+   docker build -t offerletter-frontend:latest frontend
+
+3) Enable the NGINX ingress controller
+   minikube addons enable ingress
+
+4) Apply Kubernetes manifests
+   kubectl apply -f k8s/manifest.yaml
+
+5) Verify pods are running
+   kubectl get pods
+
+6) Access the app via Ingress
+   - Get Minikube IP:
+     MINIKUBE_IP=$(minikube ip)
+   - Frontend:
+     http://$MINIKUBE_IP/
+   - Frontend health:
+     http://$MINIKUBE_IP/health
+   - Backend health:
+     http://$MINIKUBE_IP/api/health
+
+Notes
+- The backend writes generated files to a PersistentVolume mounted at /app/offer_letters.
+- MongoDB runs without authentication inside the cluster and uses a PersistentVolume for data.
+- The frontend makes requests to relative paths under /api, which the Ingress routes to the backend Service.
+- PDF conversion may not work in Linux containers due to OS dependencies of docx2pdf; in that case the service falls back to returning the DOCX.
+
+Cleanup
+- Remove resources:
+  kubectl delete -f k8s/manifest.yaml
+- Stop Minikube:
+  minikube stop
+
 ## License
 
 This project is licensed under the MIT License.
