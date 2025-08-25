@@ -25,6 +25,7 @@ services:
     volumes:
       - ./backend/offer_letters:/app/offer_letters
       - ./backend/app:/app/app
+      - ./backend/tests:/app/tests
     environment:
       - PYTHONPATH=/app
       - MONGO_URI=mongodb://admin:password@mongodb:27017/

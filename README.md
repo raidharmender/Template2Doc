@@ -80,7 +80,8 @@ python test_applications.py
 
 4. **Run the application**
    ```bash
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ## Go to the backend directory and run the application
+   cd backend/ &&  uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
 ### Frontend
